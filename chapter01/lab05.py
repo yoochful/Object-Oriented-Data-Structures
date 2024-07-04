@@ -20,7 +20,7 @@
 # Enter All Bid : 5 10 20 20 10
 # error : have more than one highest bid
 
-bids_input = input("Enter All Bid: ").split()
+bids_input = input("Enter All Bid : ").split()
 bids = [int(bid) for bid in bids_input]
 
 def vickrey_auction(bids):
