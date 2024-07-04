@@ -20,26 +20,26 @@
 # Enter All Bid : 5 10 20 20 10
 # error : have more than one highest bid
 
+bids_input = input("Enter All Bid: ").split()
+bids = [int(bid) for bid in bids_input]
 
-
-def vickrey_auction():
-    bids = input("Enter All Bid: ").split()
-    bids = list(map(int, bids))
+def vickrey_auction(bids):
     
-    if len(bids) < 2:
-        print("not enough bidder")
-        return
-
-    unique_bids = list(set(bids))
-    unique_bids.sort(reverse=True)
+    not_repeat_bids = list(set(bids))
     
-    if bids.count(unique_bids[0]) > 1:
-        print("error : have more than one highest bid")
-        return
+    if len(not_repeat_bids) < 2:
+        return "not enough bidder"
+    
+    highest_bid = max(not_repeat_bids)
+    not_repeat_bids.remove(highest_bid)
+    
+    if bids.count(highest_bid) > 1:
+        return "error : have more than one highest bid"
+    
+    second_highest_bid = max(not_repeat_bids)
+    return f"winner bid is {highest_bid} need to pay {second_highest_bid}"
 
-    highest_bid = unique_bids[0]
-    second_highest_bid = unique_bids[1]
-
-    print(f"winner bid is {highest_bid} need to pay {second_highest_bid}")
+result = vickrey_auction(bids)
+print(result)
 
 
