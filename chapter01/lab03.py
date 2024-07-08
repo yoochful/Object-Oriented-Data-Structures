@@ -37,6 +37,6 @@ def permute(num):
 
 permuted_list = permute(input_list)
 
-print("Original Collection: ",input_list)
+print("Original Coflection: ",input_list)
 print("Collection of distinct numbers:")
 print(permuted_list)
