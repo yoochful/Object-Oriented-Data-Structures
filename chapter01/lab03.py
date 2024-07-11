@@ -14,29 +14,30 @@
 # Collection of distinct numbers:
 #  [[3, 2, 1, 1], [2, 3, 1, 1], [2, 1, 3, 1], [2, 1, 1, 3], [3, 1, 2, 1], [1, 3, 2, 1], [1, 2, 3, 1], [1, 2, 1, 3], [3, 1, 1, 2], [1, 3, 1, 2], [1, 1, 3, 2], [1, 1, 2, 3], [3, 2, 1, 1], [2, 3, 1, 1], [2, 1, 3, 1], [2, 1, 1, 3], [3, 1, 2, 1], [1, 3, 2, 1], [1, 2, 3, 1], [1, 2, 1, 3], [3, 1, 1, 2], [1, 3, 1, 2], [1, 1, 3, 2], [1, 1, 2, 3]]
 
-
-input = input("Input: ")
-input_list = list(map(int, input.split(',')))
-
-def permute(num):
+def insert_all_positions(lst, item):
     result = []
-
-    if len(num) == 0:
-        return []
-    
-    if len(num) == 1:
-        return [num]
-    
-    for i in range(len(num)):
-        current_num = num[i]
-        remaining_num = num[:i] + num[i+1:]
-        for p in permute(remaining_num):
-            result.append([current_num] + p)
-    
+    for i in range(len(lst) + 1):
+        new_lst = lst[:]
+        new_lst.insert(i, item)
+        result.append(new_lst)
     return result
 
-permuted_list = permute(input_list)
+def permute(nums):
+    if len(nums) == 1:
+        return [nums]
+    
+    last_item = nums[-1]
+    prev_permutations = permute(nums[:-1])
+    result = []
+    for perm in prev_permutations:
+        result.extend(insert_all_positions(perm, last_item))
+    return result
 
-print("Original Coflection: ",input_list)
-print("Collection of distinct numbers:")
-print(permuted_list)
+print("*** Fun with permute ***")
+print("input : ", end="")
+a = list(map(int, input().split(',')))
+print("Original Cofllection: ", a)
+result = permute(a)
+print("Collection of distinct numbers:\n", result)
+
+
