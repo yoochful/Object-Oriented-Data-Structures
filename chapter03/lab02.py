@@ -17,19 +17,41 @@
 # 102
 # 3
 
-def process_input(input_string):
-    to_do_list = input_string.split(',')
-    items = Stack()
+class Stack:
+    def __init__(self):
+        self.stack = []
+        self.broken_frequencies = []
     
-    for to_do in to_do_list:
-        if to_do.startswith('A'):
-            _, value = to_do.split()
-            items.push(int(value))
-        elif to_do == 'P':
-            items.pop()
+    def push(self, weight, frequency):
+        self.stack.append((weight, frequency))
+        self.check_for_breaks()
+    
+    def check_for_breaks(self):
+        while len(self.stack) > 1:
+            top = self.stack[-1]
+            below = self.stack[-2]
+            if top[0] > below[0]:
+                self.broken_frequencies.append(below[1])
+                self.stack.pop(-2) 
+            else:
+                break
+    
+    def get_broken_frequencies(self):
+        return self.broken_frequencies
 
-    items.display()
+def process_input(input_string):
+    plates_info = input_string.split(',')
+    stack = Stack()
+    
+    for plate_info in plates_info:
+        weight, frequency = map(int, plate_info.split())
+        stack.push(weight, frequency)
+    
+    broken_frequencies = stack.get_broken_frequencies()
+    for freq in broken_frequencies:
+        print(freq)
 
 input_string = input("Enter Input : ")
 process_input(input_string)
+
 

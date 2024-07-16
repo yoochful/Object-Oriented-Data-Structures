@@ -1,1 +1,1 @@
-STACK
+G H H H H P
