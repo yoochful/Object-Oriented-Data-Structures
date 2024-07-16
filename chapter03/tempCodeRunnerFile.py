@@ -1,1 +1,1 @@
-G H H H H P
+3 DUP +

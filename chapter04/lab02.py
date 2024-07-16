@@ -68,4 +68,69 @@
 # 21 ['g'] ['t', 'd', 'o', 'a', 'z'] ['m', 'a', 'i', 'n']
 # 22 [] ['d', 'o', 'a', 'z', 'g'] ['a', 'i', 'n']
 
-# Page 
+class CashierQueue:
+    def __init__(self, time_per_customer):
+        self.queue = []
+        self.time_per_customer = time_per_customer
+    
+    def is_empty(self):
+        return len(self.queue) == 0
+    
+    def add_customer(self, customer):
+        self.queue.append(customer)
+    
+    def remove_customer(self):
+        if not self.is_empty():
+            return self.queue.pop(0)
+        return None
+    
+    def process_time(self):
+        return self.time_per_customer
+
+
+def simulate_queues(customers):
+    cashier1 = CashierQueue(3)  # Time per customer for cashier 1
+    cashier2 = CashierQueue(2)  # Time per customer for cashier 2
+    main_queue = list(customers)  # Convert string of customers to list of characters
+    
+    minute = 1
+    result = []
+    while main_queue or not cashier1.is_empty() or not cashier2.is_empty():
+        result.append(f"{minute} {main_queue} {cashier1.queue} {cashier2.queue}")
+        
+        if not cashier1.is_empty():
+            cashier1.time_per_customer -= 1
+            if cashier1.time_per_customer == 0:
+                cashier1.remove_customer()
+        
+        if not cashier2.is_empty():
+            cashier2.time_per_customer -= 1
+            if cashier2.time_per_customer == 0:
+                cashier2.remove_customer()
+        
+        if main_queue:
+            customer = main_queue.pop(0)
+            if not cashier1.is_empty():
+                cashier1.add_customer(customer)
+            elif not cashier2.is_empty():
+                cashier2.add_customer(customer)
+            else:
+                cashier1.add_customer(customer)
+        
+        minute += 1
+    
+    return result
+
+# Input
+inputs = [
+    "Lorem_Ipsum",
+    "JUST_DO_IT!!!!",
+    "A_is_stand_for_amazing"
+]
+
+for input_str in inputs:
+    output = simulate_queues(input_str)
+    for line in output:
+        print(line)
+    print()
+
