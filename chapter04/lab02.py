@@ -68,69 +68,75 @@
 # 21 ['g'] ['t', 'd', 'o', 'a', 'z'] ['m', 'a', 'i', 'n']
 # 22 [] ['d', 'o', 'a', 'z', 'g'] ['a', 'i', 'n']
 
-class CashierQueue:
-    def __init__(self, time_per_customer):
-        self.queue = []
-        self.time_per_customer = time_per_customer
-    
-    def is_empty(self):
-        return len(self.queue) == 0
-    
-    def add_customer(self, customer):
-        self.queue.append(customer)
-    
-    def remove_customer(self):
-        if not self.is_empty():
-            return self.queue.pop(0)
-        return None
-    
-    def process_time(self):
-        return self.time_per_customer
+class Queue:
+    def __init__(self, items) -> None:
+        self.__queue = items
+
+    def dequeue(self):
+        return self.__queue.pop(0)
+
+    def enqueue(self, item):
+        self.__queue.append(item)
+
+    def get_queue(self):
+        return self.__queue
+
+    def length(self):
+        return len(self.__queue)
+
+    def __str__(self) -> str:
+        return self.__queue.__str__()
+
+class Cashier:
+    def __init__(self, queue, processing_time, max_queue_length) -> None:
+        self.__queue = queue
+        self.__processing_time = processing_time
+        self.__max_queue_length = max_queue_length
+        self.__last_added_timestamp = 0
+        self.__current_process_tick = 0
+
+    def get_queue(self):
+        return self.__queue
+
+    def set_queue(self, queue, timestamp):
+        self.__queue = queue
+        self.__last_added_timestamp = timestamp
+
+    def get_processing_time(self):
+        return self.__processing_time
+
+    def get_max_queue_length(self):
+        return self.__max_queue_length
+
+    def get_last_added_timestamp(self):
+        return self.__last_added_timestamp
+
+    def process(self, timestamp):
+        if self.__current_process_tick < self.__processing_time and self.get_queue().length():
+            self.__current_process_tick += 1
+        else:
+            if self.__queue.length():
+                self.__queue.dequeue()
+            self.__current_process_tick = 1
 
 
-def simulate_queues(customers):
-    cashier1 = CashierQueue(3)  # Time per customer for cashier 1
-    cashier2 = CashierQueue(2)  # Time per customer for cashier 2
-    main_queue = list(customers)  # Convert string of customers to list of characters
-    
-    minute = 1
-    result = []
-    while main_queue or not cashier1.is_empty() or not cashier2.is_empty():
-        result.append(f"{minute} {main_queue} {cashier1.queue} {cashier2.queue}")
-        
-        if not cashier1.is_empty():
-            cashier1.time_per_customer -= 1
-            if cashier1.time_per_customer == 0:
-                cashier1.remove_customer()
-        
-        if not cashier2.is_empty():
-            cashier2.time_per_customer -= 1
-            if cashier2.time_per_customer == 0:
-                cashier2.remove_customer()
-        
-        if main_queue:
-            customer = main_queue.pop(0)
-            if not cashier1.is_empty():
-                cashier1.add_customer(customer)
-            elif not cashier2.is_empty():
-                cashier2.add_customer(customer)
-            else:
-                cashier1.add_customer(customer)
-        
-        minute += 1
-    
-    return result
 
-# Input
-inputs = [
-    "Lorem_Ipsum",
-    "JUST_DO_IT!!!!",
-    "A_is_stand_for_amazing"
-]
+input_string = input('Enter people : ')
+characters = list(char for char in input_string)
 
-for input_str in inputs:
-    output = simulate_queues(input_str)
-    for line in output:
-        print(line)
-    print()
+main_queue = Queue(characters)
+cashier1 = Cashier(Queue([]), 3, 5)
+cashier2 = Cashier(Queue([]), 2, 5)
 
+for timestamp in range(main_queue.length()):
+    character = main_queue.dequeue()
+
+    cashier1.process(timestamp)
+    cashier2.process(timestamp)
+
+    if cashier1.get_queue().length() < cashier1.get_max_queue_length():
+        cashier1.get_queue().enqueue(character)
+    elif cashier2.get_queue().length() < cashier2.get_max_queue_length():
+        cashier2.get_queue().enqueue(character)
+
+    print(f'{timestamp + 1} {main_queue} {cashier1.get_queue()} {cashier2.get_queue()}')
