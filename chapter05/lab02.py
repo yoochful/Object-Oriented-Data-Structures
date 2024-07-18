@@ -245,11 +245,11 @@ for i in inputs:
 
 backpath = []
 
-history_output = " -> ".join(history)
-print(f"History : {history_output}")
+history_output = " ".join(history)
+print(f"Linked List : {history_output}")
 
 while not doubly.isEmpty():
   backpath.append(doubly.remove_tail().element)
 
-backpath_output = " -> ".join(backpath)
-print(f"BackPath : {backpath_output}")
+backpath_output = " ".join(backpath)
+print(f"Linked List Reverse : {backpath_output}")
