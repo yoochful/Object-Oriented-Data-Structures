@@ -65,66 +65,86 @@
 class StackCalc:
     def __init__(self):
         self.stack = []
+        self.error = None
 
     def run(self, instructions):
-        self.stack = []
-        tokens = instructions.split()
-        for token in tokens:
-            if token.isdigit() or (token[1:].isdigit() and token[0] == '-'):
-                self.stack.append(int(token))
-            elif token == '+':
-                if len(self.stack) < 2:
-                    print(f"Invalid instruction: {token}")
-                    return
-                a = self.stack.pop()
-                b = self.stack.pop()
-                self.stack.append(b + a)
-            elif token == '-':
-                if len(self.stack) < 2:
-                    print(f"Invalid instruction: {token}")
-                    return
-                a = self.stack.pop()
-                b = self.stack.pop()
-                self.stack.append(b - a)
-            elif token == '*':
-                if len(self.stack) < 2:
-                    print(f"Invalid instruction: {token}")
-                    return
-                a = self.stack.pop()
-                b = self.stack.pop()
-                self.stack.append(b * a)
-            elif token == '/':
-                if len(self.stack) < 2:
-                    print(f"Invalid instruction: {token}")
-                    return
-                a = self.stack.pop()
-                b = self.stack.pop()
-                if a == 0:
-                    print("Division by zero error")
-                    return
-                self.stack.append(b // a)  # Perform division as b / a
-            elif token == 'DUP':
-                if not self.stack:
-                    print(f"Invalid instruction: {token}")
-                    return
-                self.stack.append(self.stack[-1])
-            elif token == 'POP':
-                if not self.stack:
-                    print(f"Invalid instruction: {token}")
-                    return
-                self.stack.pop()
+        for instruction in instructions.split():
+            if instruction.isdigit() or (instruction[0] == '-' and instruction[1:].isdigit()):  # Handling negative numbers
+                self.stack.append(int(instruction))
+            elif instruction == '+':
+                self._add()
+            elif instruction == '-':
+                self._subtract()
+            elif instruction == '*':
+                self._multiply()
+            elif instruction == '/':
+                self._divide()
+            elif instruction == 'DUP':
+                self._duplicate()
+            elif instruction == 'POP':
+                self._pop()
             else:
-                print(f"Invalid instruction: {token}")
-                return
+                self.error = f"Invalid instruction: {instruction}"
+                break
+
+    def _add(self):
+        if len(self.stack) >= 2:
+            a = self.stack.pop()
+            b = self.stack.pop()
+            self.stack.append(a + b)
+        else:
+            self.error = "Invalid instruction: +"
+
+    def _subtract(self):
+        if len(self.stack) >= 2:
+            a = self.stack.pop()
+            b = self.stack.pop()
+            self.stack.append(a - b)
+        else:
+            self.error = "Invalid instruction: -"
+
+    def _multiply(self):
+        if len(self.stack) >= 2:
+            a = self.stack.pop()
+            b = self.stack.pop()
+            self.stack.append(a * b)
+        else:
+            self.error = "Invalid instruction: *"
+
+    def _divide(self):
+        if len(self.stack) >= 2:
+            a = self.stack.pop()
+            b = self.stack.pop()
+            if b == 0:
+                self.error = "Invalid instruction: division by zero"
+            else:
+                self.stack.append(int(a / b))
+        else:
+            self.error = "Invalid instruction: /"
+
+    def _duplicate(self):
+        if len(self.stack) >= 1:
+            self.stack.append(self.stack[-1])
+        else:
+            self.error = "Invalid instruction: DUP"
+
+    def _pop(self):
+        if len(self.stack) >= 1:
+            self.stack.pop()
+        else:
+            self.error = "Invalid instruction: POP"
 
     def getValue(self):
+        if self.error:
+            return self.error
         if self.stack:
             return self.stack[-1]
-        return 0
+        else:
+            return 0
 
-# Test the StackCalc class
+# Example usage:
 print("* Stack Calculator *")
-arg = input("Enter arguments: ")
+arg = input("Enter arguments : ")
 machine = StackCalc()
 machine.run(arg)
 print(machine.getValue())
