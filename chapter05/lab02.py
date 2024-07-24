@@ -174,82 +174,102 @@
 # Linked List : KMITL 0 1 2 3 
 # Linked List Reverse : 3 2 1 0 KMITL 
 
-class DoublyLinkedList:
-  class Node:
-    def __init__(self, element) -> None:
-      self.element = element
-      self.prev = None
-      self.next = None
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
 
-  def __init__(self) -> None:
-    self.head = None
-    self.tail = None
-    self.size = 0
+class LinkedList:
+    def __init__(self):
+        self.head = None
 
-  def size(self) -> int:
-    return self.size
+    def append(self, value):
+        if not self.head:
+            self.head = Node(value)
+        else:
+            current = self.head
+            while current.next:
+                current = current.next
+            current.next = Node(value)
 
-  def isEmpty(self) -> bool:
-    return self.size == 0
+    def to_list(self):
+        result = []
+        current = self.head
+        while current:
+            result.append(current.value)
+            current = current.next
+        return result
 
-  def append(self, element):
-    new_node = self.Node(element)
-    if self.isEmpty():
-      self.head = self.tail = new_node
-    else:
-      self.tail.next = new_node
-      new_node.prev = self.tail
-      self.tail = new_node
-    self.size += 1
+    def __str__(self):
+        if not self.head:
+            return ''
+        result = []
+        current = self.head
+        while current:
+            result.append(str(current.value))
+            current = current.next
+        return ' -> '.join(result)
 
-  def remove_tail(self):
-    tail = self.tail
-    before_tail = self.tail.prev
-    if before_tail is not None:
-      self.tail = before_tail
-      self.tail.next = None
-    else:
-      self.head = self.tail = None
-    self.size -= 1
-    return tail
+def get_digit(number, digit_index):
+    return abs(number) // (10 ** digit_index) % 10
 
-  def __str__(self) -> str:
-    cur = self.head
-    s = ""
-    while cur is not None:
-      s += cur.element
-      cur = cur.next
-    return s
+def max_digits(numbers):
+    max_num = max(numbers, key=abs)
+    return len(str(abs(max_num)))
 
+def radix_sort(numbers):
+    linked_list = LinkedList()
+    for num in numbers:
+        linked_list.append(num)
+    
+    round_num = 0
+    max_digit_index = max_digits(numbers)
+    current_list = linked_list
 
-doubly = DoublyLinkedList()
-inputs = input("Enter Input : ").split(",")
-history = []
-future = []
-for i in inputs:
-  if len(i) == 1:
-    if i == "B":
-      theFuture.append(doubly.remove_tail().element)
-      if not doubly.isEmpty():
-        history.append(doubly.tail.element)
-    elif i == "F":
-      elem = theFuture.pop()
-      doubly.append(elem)
-      history.append(elem)
-    continue
+    for digit_index in range(max_digit_index):
+        round_num += 1
+        buckets = [LinkedList() for _ in range(10)]
 
-  elem = i.split(" ")[1]
-  doubly.append(elem)
-  history.append(elem)
-  theFuture = []
+        current = current_list.head
+        while current:
+            digit = get_digit(current.value, digit_index)
+            buckets[digit].append(current.value)
+            current = current.next
 
-backpath = []
+        if digit_index == 0:
+            print("-" * 60)
+        print(f"Round : {round_num}")
+        for i, bucket in enumerate(buckets):
+            print(f"{i} : {bucket}")
 
-history_output = " ".join(history)
-print(f"Linked List : {history_output}")
+        current_list = LinkedList()
+        for bucket in buckets:
+            current = bucket.head
+            while current:
+                current_list.append(current.value)
+                current = current.next
+    
+    sorted_list = current_list.to_list()
+    sorted_list.sort(reverse=True)
+    
+    return round_num, linked_list.to_list(), sorted_list
 
-while not doubly.isEmpty():
-  backpath.append(doubly.remove_tail().element)
+# Test Cases
+test_cases = [
+    [64, 8, 216, 512, 27, 729, 0, 1, 343, 125],
+    [456, -789, 0, -50384, 15615, -1, 72],
+    [-1, -9, -3, -6, -5, -4, -7, 0, -8, -2, 3, 2, 5, 1, 4, 9, 8, 7, 6],
+    [15, -15],
+    [-12345, 98765, -87654],
+    [0, 0, 0, 0, 0, 0, 0],
+]
 
-backpath_output = " ".join(backpath)
-print(f"Linked List Reverse : {backpath_output}")
+for idx, test in enumerate(test_cases, 1):
+    print(f"Testcase : #{idx} {idx}")
+    print(f"Enter Input : {' '.join(map(str, test))}")
+    round_num, before_sort, after_sort = radix_sort(test)
+    print("-" * 60)
+    print(f"{round_num} Time(s)")
+    print(f"Before Radix Sort : {' -> '.join(map(str, before_sort))}")
+    print(f"After  Radix Sort : {' -> '.join(map(str, after_sort))}")
+    print()
